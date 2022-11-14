@@ -9,7 +9,7 @@ import org.springframework.cloud.client.discovery.EnableDiscoveryClient;
  * @Date 2022/11/4 16:03
  */
 @SpringBootApplication
-@EnableDiscoveryClient
+//@EnableDiscoveryClient
 public class ServiceB {
     public static void main(String[] args) {
         SpringApplication.run(ServiceB.class, args);

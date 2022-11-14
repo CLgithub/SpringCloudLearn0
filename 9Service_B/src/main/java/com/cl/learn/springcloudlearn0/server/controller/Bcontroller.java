@@ -1,6 +1,5 @@
 package com.cl.learn.springcloudlearn0.server.controller;
 
-import com.cl.learn.springcloudlearn0.server.Utils;
 import com.cl.learn.springcloudlearn0.server.service.BService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestMapping;

@@ -17,10 +17,10 @@
     </properties>
 
     <dependencies>
-        <!--eureka client-->
+        <!-- zk 注册中心 -->
         <dependency>
             <groupId>org.springframework.cloud</groupId>
-            <artifactId>spring-cloud-starter-netflix-eureka-client</artifactId>
+            <artifactId>spring-cloud-starter-zookeeper-discovery</artifactId>
         </dependency>
         <!-- gateway 网关-->
         <dependency>
