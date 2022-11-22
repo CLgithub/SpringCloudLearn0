@@ -26,4 +26,5 @@ public class SelfHystrixController {
         map.put("result","");
         return map;
     }
+
 }
