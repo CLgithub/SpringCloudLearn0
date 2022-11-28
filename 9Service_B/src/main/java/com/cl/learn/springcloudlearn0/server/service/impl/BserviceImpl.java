@@ -1,5 +1,6 @@
 package com.cl.learn.springcloudlearn0.server.service.impl;
 
+import com.alibaba.csp.sentinel.annotation.SentinelResource;
 import com.cl.learn.springcloudlearn0.server.Utils;
 import com.cl.learn.springcloudlearn0.server.service.BService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -25,6 +26,7 @@ public class BserviceImpl implements BService {
     private long s;
 
     @Override
+    @SentinelResource(value = "bm1", fallback = "fb")
     public Object m1() throws UnknownHostException {
         try {
             Thread.sleep(s*1000);
@@ -32,6 +34,11 @@ public class BserviceImpl implements BService {
             e.printStackTrace();
         }
         return utils.getLocal(InetAddress.getLocalHost(), environment);
+    }
+
+    @SentinelResource("fb")
+    public Object fb(){
+        return "bm1-限流";
     }
 
 

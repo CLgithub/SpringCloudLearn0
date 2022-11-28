@@ -1,5 +1,6 @@
 package com.cl.learn.springcloudlearn0.server.controller;
 
+import com.alibaba.csp.sentinel.annotation.SentinelResource;
 import com.cl.learn.springcloudlearn0.server.Utils;
 import com.cl.learn.springcloudlearn0.server.service.AService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -23,4 +24,5 @@ public class AController {
     public Object m1() throws UnknownHostException {
         return AService.m1();
     }
+
 }
