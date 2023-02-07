@@ -28,10 +28,9 @@
             <artifactId>spring-cloud-starter-gateway</artifactId>
             <version>3.1.4</version>
         </dependency>
-        <!-- hystrix -->
         <dependency>
-            <groupId>org.springframework.cloud</groupId>
-            <artifactId>spring-cloud-starter-netflix-hystrix</artifactId>
+            <groupId>com.alibaba.csp</groupId>
+            <artifactId>sentinel-spring-cloud-gateway-adapter</artifactId>
         </dependency>
     </dependencies>
 
