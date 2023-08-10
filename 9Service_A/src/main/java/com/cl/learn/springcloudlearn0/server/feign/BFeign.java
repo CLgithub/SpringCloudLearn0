@@ -9,7 +9,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
  * @Date 2022/11/4 16:17
  */
 @Component
-@FeignClient(value = "serviceB", fallback = BFeignFB.class)
+@FeignClient(value = "serviceB", fallback = BFeignFB.class)     // feign调用 配置被调用的服务 以及兜底处理类
 public interface BFeign {
 
     //----------------/B

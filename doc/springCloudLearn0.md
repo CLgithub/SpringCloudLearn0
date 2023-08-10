@@ -30,3 +30,15 @@
     * `java -jar sentinel-dashboard-1.8.6.jar`启动即可
     * 访问`http://ip:8080/`，用户名密码均为`sentinel`
 ### 服务
+* 服务调用者
+    * [pom.xml](../9Service_A/pom.xml)
+    * 配置文件
+        * resources目录下放置bootstrap.properties
+            ```
+            spring.cloud.nacos.server-addr=vUbuntu4:8848
+            spring.application.name=serviceA
+            ```
+        * [真正的配置](../nacosConfig/serviceA.properties)交给nacos，配置在nacos配置列表中，`DataID`与服务名一致
+    * 程序注解
+        * [主启动类](../9Service_A/src/main/java/com/cl/learn/springcloudlearn0/server/ServiceA.java)
+        * [动态刷新配置](../9Service_A/src/main/java/com/cl/learn/springcloudlearn0/server/config/MyConfig.java)
