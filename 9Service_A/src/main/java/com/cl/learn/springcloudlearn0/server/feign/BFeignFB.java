@@ -8,7 +8,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 /**
- * 兜底处理
+ * 服务降级
  * @Author l
  * @Date 2022/11/7 10:36
  */
@@ -22,7 +22,7 @@ public class BFeignFB implements BFeign{
         logger.warn(Thread.currentThread().getStackTrace()[1].getMethodName()+" fallback!");
         Map<String,String> map = new HashMap<>();
         map.put("Code","fail");
-        map.put("Message","服务异常");
+        map.put("Message","服务异常，fallback服务降级处理");
         map.put("result","");
         return map.toString();
     }
