@@ -1,5 +1,7 @@
 package com.cl.learn.springcloudlearn0.servicegate.config;
 
+import com.alibaba.cloud.sentinel.SentinelProperties;
+import com.alibaba.cloud.sentinel.datasource.config.NacosDataSourceProperties;
 import com.alibaba.csp.sentinel.adapter.gateway.common.SentinelGatewayConstants;
 import com.alibaba.csp.sentinel.adapter.gateway.common.api.ApiDefinition;
 import com.alibaba.csp.sentinel.adapter.gateway.common.api.ApiPathPredicateItem;
@@ -9,8 +11,11 @@ import com.alibaba.csp.sentinel.adapter.gateway.common.rule.GatewayFlowRule;
 import com.alibaba.csp.sentinel.adapter.gateway.common.rule.GatewayParamFlowItem;
 import com.alibaba.csp.sentinel.adapter.gateway.common.rule.GatewayRuleManager;
 import com.alibaba.csp.sentinel.adapter.gateway.sc.SentinelGatewayFilter;
+import com.alibaba.csp.sentinel.adapter.gateway.sc.callback.GatewayCallbackManager;
 import com.alibaba.csp.sentinel.adapter.gateway.sc.exception.SentinelGatewayBlockExceptionHandler;
+import com.alibaba.csp.sentinel.datasource.ReadableDataSource;
 import org.springframework.beans.factory.ObjectProvider;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cloud.context.config.annotation.RefreshScope;
 import org.springframework.cloud.gateway.filter.GlobalFilter;
 import org.springframework.cloud.gateway.route.RouteLocator;
@@ -19,14 +24,13 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.Ordered;
 import org.springframework.core.annotation.Order;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.codec.ServerCodecConfigurer;
+import org.springframework.web.reactive.function.server.ServerResponse;
 import org.springframework.web.reactive.result.view.ViewResolver;
-
 import javax.annotation.PostConstruct;
-import java.util.Collections;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
 /**
  * 参考
@@ -75,10 +79,11 @@ public class GateWayConfig {
 
     @PostConstruct
     public void doInit() {
-        initCustomizedApis();
+//        initCustomizedApis();
         initGatewayRules();
     }
 
+    // 初始化客户端api
     private void initCustomizedApis() {
         Set<ApiDefinition> definitions = new HashSet<>();
         ApiDefinition api1 = new ApiDefinition("some_customized_api")
@@ -97,21 +102,23 @@ public class GateWayConfig {
         GatewayApiDefinitionManager.loadApiDefinitions(definitions);
     }
 
+
+    // 初始化路由
     private void initGatewayRules() {
         Set<GatewayFlowRule> rules = new HashSet<>();
-        rules.add(new GatewayFlowRule("aliyun_route")
-                .setCount(10)
+        rules.add(new GatewayFlowRule("routes_B")
+                .setCount(1)
                 .setIntervalSec(1)
         );
-        rules.add(new GatewayFlowRule("some_customized_api")
-                .setResourceMode(SentinelGatewayConstants.RESOURCE_MODE_CUSTOM_API_NAME)
-                .setCount(5)
-                .setIntervalSec(1)
-                .setParamItem(new GatewayParamFlowItem()
-                        .setParseStrategy(SentinelGatewayConstants.PARAM_PARSE_STRATEGY_URL_PARAM)
-                        .setFieldName("pn")
-                )
-        );
+//        rules.add(new GatewayFlowRule("some_customized_api")
+//                .setResourceMode(SentinelGatewayConstants.RESOURCE_MODE_CUSTOM_API_NAME)
+//                .setCount(5)
+//                .setIntervalSec(1)
+//                .setParamItem(new GatewayParamFlowItem()
+//                        .setParseStrategy(SentinelGatewayConstants.PARAM_PARSE_STRATEGY_URL_PARAM)
+//                        .setFieldName("pn")
+//                )
+//        );
         GatewayRuleManager.loadRules(rules);
     }
 
