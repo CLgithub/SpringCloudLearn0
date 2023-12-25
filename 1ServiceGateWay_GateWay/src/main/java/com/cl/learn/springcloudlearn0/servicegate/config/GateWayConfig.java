@@ -7,13 +7,20 @@ import com.alibaba.csp.sentinel.adapter.gateway.common.api.ApiDefinition;
 import com.alibaba.csp.sentinel.adapter.gateway.common.api.ApiPathPredicateItem;
 import com.alibaba.csp.sentinel.adapter.gateway.common.api.ApiPredicateItem;
 import com.alibaba.csp.sentinel.adapter.gateway.common.api.GatewayApiDefinitionManager;
+import com.alibaba.csp.sentinel.adapter.gateway.common.command.UpdateGatewayRuleCommandHandler;
 import com.alibaba.csp.sentinel.adapter.gateway.common.rule.GatewayFlowRule;
 import com.alibaba.csp.sentinel.adapter.gateway.common.rule.GatewayParamFlowItem;
 import com.alibaba.csp.sentinel.adapter.gateway.common.rule.GatewayRuleManager;
 import com.alibaba.csp.sentinel.adapter.gateway.sc.SentinelGatewayFilter;
 import com.alibaba.csp.sentinel.adapter.gateway.sc.callback.GatewayCallbackManager;
 import com.alibaba.csp.sentinel.adapter.gateway.sc.exception.SentinelGatewayBlockExceptionHandler;
-import com.alibaba.csp.sentinel.datasource.ReadableDataSource;
+import com.alibaba.csp.sentinel.datasource.*;
+import com.alibaba.csp.sentinel.datasource.nacos.NacosDataSource;
+import com.alibaba.csp.sentinel.slots.block.degrade.DegradeRule;
+import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.JSONObject;
+import com.alibaba.fastjson.TypeReference;
+import com.alibaba.nacos.api.config.annotation.NacosProperty;
 import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cloud.context.config.annotation.RefreshScope;
@@ -30,6 +37,7 @@ import org.springframework.http.codec.ServerCodecConfigurer;
 import org.springframework.web.reactive.function.server.ServerResponse;
 import org.springframework.web.reactive.result.view.ViewResolver;
 import javax.annotation.PostConstruct;
+import java.io.FileNotFoundException;
 import java.util.*;
 
 /**
@@ -78,9 +86,9 @@ public class GateWayConfig {
     }
 
     @PostConstruct
-    public void doInit() {
+    public void doInit() throws FileNotFoundException {
 //        initCustomizedApis();
-        initGatewayRules();
+        initGatewayRules3();
     }
 
     // 初始化客户端api
@@ -103,8 +111,11 @@ public class GateWayConfig {
     }
 
 
+    @Autowired
+    private SentinelProperties sentinelProperties;
+
     // 初始化路由
-    private void initGatewayRules() {
+    private void initGatewayRules1() throws FileNotFoundException {
         Set<GatewayFlowRule> rules = new HashSet<>();
         rules.add(new GatewayFlowRule("routes_B")
                 .setCount(1)
@@ -120,6 +131,29 @@ public class GateWayConfig {
 //                )
 //        );
         GatewayRuleManager.loadRules(rules);
+
+
+    }
+    private void initGatewayRules2() throws FileNotFoundException {
+        sentinelProperties.getDatasource().entrySet().stream().filter(map -> map.getValue().getNacos() != null).forEach(map -> {
+            NacosDataSourceProperties ndsp = map.getValue().getNacos();
+            ReadableDataSource<String, Set<GatewayFlowRule>> readableDataSource = new NacosDataSource<>(
+                    ndsp.getServerAddr(), ndsp.getGroupId(), ndsp.getDataId(),
+                    source -> JSON.parseObject(source, new TypeReference<Set<GatewayFlowRule>>() {
+                    })
+            );
+            GatewayRuleManager.register2Property(readableDataSource.getProperty());
+        });
+    }
+
+    private void initGatewayRules3() throws FileNotFoundException {
+        String flowRulePath = "/Users/l/develop/clProject/0-java/0-intellij/SpringCloudLearn0/1ServiceGateWay_GateWay/src/main/resources/gateway-flow-rule.json";
+        ReadableDataSource<String, Set<GatewayFlowRule>> ds = new FileRefreshableDataSource<>(
+                flowRulePath, source -> JSON.parseObject(source, new TypeReference<Set<GatewayFlowRule>>() {
+        }));
+        GatewayRuleManager.register2Property(ds.getProperty());
+        WritableDataSource<Set<GatewayFlowRule>> wds=new FileWritableDataSource<>(flowRulePath, (t)->JSON.toJSONString(t));
+        UpdateGatewayRuleCommandHandler.setWritableDataSource(wds);
     }
 
 
